@@ -1,42 +1,50 @@
-from ctypes.wintypes import SIZE
-import keyboard
-import webbrowser
-import win32api, win32con
 import threading
-import pyautogui
 import time
+
+import win32api, win32con
+import keyboard
 import PySimpleGUI as sg
+import webbrowser
+
 delayLeft = 2
 delayRight = 0.1
 script_running = False
 
+def rightClicker():
+    print("rightClicker activated")
+    time.sleep(10)
+    global script_running
+    global delayRight
+    while not keyboard.is_pressed('alt') and script_running:
+        win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN,0,0)
+        time.sleep(0.01)
+        win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP,0,0)
+        time.sleep(delayRight)
+
+def leftClicker():
+    print("leftClicker activated")
+    time.sleep(12)
+    global script_running
+    global delayLeft
+    while not keyboard.is_pressed('alt') and script_running:
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,0,0)
+        time.sleep(0.01)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,0,0)
+        time.sleep(delayLeft)
+
+def start_clicking_threads():
+    t1 = threading.Thread(target=rightClicker)
+    t2 = threading.Thread(target=leftClicker)
+    t1.start()
+    t2.start()
+
+    t1.join() 
+    t2.join()
+    print("Script Finished Clicking")
+    sg.popup_ok('Finished Duping', title=('Script Stopped'))
+
 def main():
-    def dupingClicker():
-
-        def rightClicker():
-            print("rightClicker activated")
-            time.sleep(10)
-            while keyboard.is_pressed('alt') == False and script_running == True:
-                win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN,0,0)
-                time.sleep(0.1)
-                win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP,0,0)
-                time.sleep(delayRight)
-
-        def leftClicker():
-            print("leftClicker activated")
-            time.sleep(12)
-            while keyboard.is_pressed('alt') == False and script_running == True:
-                pyautogui.click()
-                time.sleep(delayLeft)
-        t1 = threading.Thread(target=rightClicker)
-        t2 = threading.Thread(target=leftClicker)
-        t1.start()
-        t2.start()
-
-        t1.join() 
-        t2.join()
-        print("Script Finished Clicking")
-        sg.popup_ok('Finished Duping', title=('Script Stopped'))
+    
     menu = ['&Discord', ['Agent Smith#9660',]],['&Youtube', ['Subscribe',]],
     layout = [  
                 [sg.Menu(menu)],
@@ -55,21 +63,22 @@ def main():
             window['Start Duping'].update(disabled=True)
             print('pressed button - activate script')
             window['-STATUS-'].update('Script is now running...')
+            global delayLeft
+            global delayRight
             delayLeft = int(values[1])
             delayRight = float(values[2])
+            global script_running
             script_running = True
             sg.popup_notify('Hold ALT to stop duping') 
-            dupingClicker() 
+            start_clicking_threads()
             script_running = False 
             window['-STATUS-'].update('Script is not running')
             window['Start Duping'].update(disabled=False)
         if event == 'Subscribe':
             webbrowser.open('https://www.youtube.com/channel/UCP--oW_mE6ZVLptYoTDMe1w')    
         if event == sg.WIN_CLOSED or event == 'Exit':
-            script_running = False
             break
         
-
     window.close()   
 
 
