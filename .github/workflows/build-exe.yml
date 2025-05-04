@@ -2,7 +2,8 @@ name: Build Windows EXE with PyInstaller
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - 'v*'  # Triggers only when pushing a version tag like v1.0.0
 
 jobs:
   build:
@@ -21,11 +22,11 @@ jobs:
       run: |
         pip install pyinstaller pywin32 keyboard PySimpleGUI
 
-    - name: Build EXE with icon
+    - name: Build EXE
       run: |
         pyinstaller --onefile --icon=item_frame.ico duper.py
 
-    - name: Upload EXE to Release
+    - name: Upload EXE to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: dist/duper.exe
