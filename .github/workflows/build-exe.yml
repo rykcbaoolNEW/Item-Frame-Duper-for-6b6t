@@ -1,34 +1,33 @@
-name: Build EXE with PyInstaller
+name: Build Windows EXE with PyInstaller
 
 on:
   push:
-    branches: [main]  # Trigger on push to the main branch
-  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: windows-latest  # Use a Windows runner to build the EXE
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/upload-artifact@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'  # Use the Python version you need
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller  # Install PyInstaller for building the .exe
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller pywin32 keyboard PySimpleGUI
 
-      - name: Build EXE
-        run: |
-          pyinstaller --onefile your_script.py  # Replace 'your_script.py' with your script name
+    - name: Build EXE with icon
+      run: |
+        pyinstaller --onefile --icon=item_frame.ico duper.py
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v3  # Upload the built .exe as an artifact
-        with:
-          name: python-exe  # Artifact name
-          path: dist/*.exe  # Path to the generated .exe file
+    - name: Upload EXE to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/duper.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
