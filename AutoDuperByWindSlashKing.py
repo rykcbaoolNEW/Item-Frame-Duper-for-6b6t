@@ -6,6 +6,12 @@ import keyboard
 import PySimpleGUI as sg
 import webbrowser
 
+import sys
+import tkinter as tk
+from tkinter import Button
+from PIL import Image, ImageTk
+import os
+
 delayLeft = 2
 delayRight = 0.1
 script_running = False
