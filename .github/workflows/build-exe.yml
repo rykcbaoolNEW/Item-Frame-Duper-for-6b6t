@@ -20,7 +20,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install pyinstaller pywin32 keyboard PySimpleGUI
+        pip install pyinstaller pywin32 keyboard
+        pip install --upgrade --extra-index-url https://PySimpleGUI.net/install PySimpleGUI
+
 
     - name: Build EXE
       run: |
